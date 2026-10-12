@@ -14,7 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Merge the PR
-        run: gh pr merge "$PR_URL" --squash --delete-branch
+        run: gh pr merge "$PR_URL" --squash
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete the PR branch
+        run: gh api -X DELETE "repos/$REPO/git/refs/heads/$BRANCH"
+        env:
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
